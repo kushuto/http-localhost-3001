@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Аренда Инструментов | Прокат Электро-Инструмента</title>
+    <style>
+        /* Дополнительные стили для модального окна авторизации */
+        .auth-modal {
+            max-width: 450px;
+        }
+
+        .auth-form {
+            padding: 20px 0;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .auth-btn.login-btn {
+            background: linear-gradient(135deg, var(--secondary-blue) 0%, var(--primary-blue) 100%);
+            color: white;
+        }
+
+        .auth-btn.register-btn {
+            background: linear-gradient(135deg, var(--success-green) 0%, #059669 100%);
+            color: white;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-medium);
+        }
+
+        .auth-switch button {
+            background: none;
+            border: none;
+            color: var(--secondary-blue);
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 5px;
+        }
+
+        .auth-switch button:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--error-red);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 6px;
+        }
+
+        .success-message {
+            color: var(--success-green);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            padding: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 6px;
+        }
+
+        .password-hint {
+            font-size: 0.8rem;
+            color: var(--gray-medium);
+            margin-top: 5px;
+        }
+
+        /* Стили для адресного блока */
+        .contact-address {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--light-blue);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .contact-address h4 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .contact-address p {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .address-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+
+        /* Стили для блока с двумя картинками */
+        .about-images {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .about-image-top,
+        .about-image-bottom {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .about-image-top:hover,
+        .about-image-bottom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(30, 58, 138, 0.15);
+        }
+
+        .about-image-top img,
+        .about-image-bottom img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .about-image-top:hover img,
+        .about-image-bottom:hover img {
+            transform: scale(1.02);
+        }
+
+        .image-caption {
+            text-align: center;
+            margin-top: 5px;
+            color: var(--gray-dark);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* Стили для логотипа */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo {
+            color: var(--white);
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .about-images {
+                gap: 15px;
+            }
+            
+            .image-caption {
+                font-size: 0.85rem;
+            }
+            
+            .logo-container {
+                margin-bottom: 10px;
+            }
+            
+            .logo-img {
+                height: 35px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-img {
+                height: 30px;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-container">
+                <img src="images/icons/logoza.ru.png" alt="Логотип" class="logo-img">
+                <h1 class="logo">🛠️ Аренда Инструментов</h1>
+            </div>
+            
+            <!-- Навигация -->
+            <nav class="main-nav">
+                <a href="#about" class="nav-link">Об организации</a>
+                <a href="#catalog-section" class="nav-link">Каталог</a>
+                <a href="#services" class="nav-link">Услуги</a>
+                <a href="#team" class="nav-link">Работники</a>
+                <a href="#calculator" class="nav-link">Калькулятор</a>
+            </nav>
+            
+            <!-- Иконка пользователя -->
+            <div class="user-menu">
+                <button class="user-icon-btn" onclick="toggleUserMenu()">
+                    <span>👤</span>
+                </button>
+                <!-- Выпадающее меню пользователя -->
+                <div id="userMenu" class="user-dropdown">
+                    <div class="user-menu-header">
+                        <h3>👤 Мой профиль</h3>
+                        <button class="close-user-menu" onclick="toggleUserMenu()">×</button>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <div class="user-avatar">👤</div>
+                            <div class="user-details">
+                                <div class="user-name" id="userName">Гость</div>
+                                <div class="user-email" id="userEmail">Не авторизован</div>
+                                <div class="user-phone" id="userPhone"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="user-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Заказов</span>
+                                <span class="stat-value" id="userOrdersCount">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Скидка</span>
+                                <span class="stat-value" id="userDiscount">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="user-menu-divider"></div>
+                    
+                    <div class="user-menu-links">
+                        <button class="menu-link-btn" onclick="showProfile()">
+                            <span>📋</span>
+                            <span>Мой профиль</span>
+                        </button>
+                        <button class="menu-link-btn" onclick="showPaymentMethods()">
+                            <span>💳</span>
+                            <span>Способы оплаты</span>
+                        </button>
+                        <button class="menu-link-btn" onclick="showOrderHistory()">
+                            <span>📦</span>
+                            <span>История заказов</span>
+                        </button>
+                        <button class="menu-link-btn" onclick="showSettings()">
+                            <span>⚙️</span>
+                            <span>Настройки</span>
+                        </button>
+                    </div>
+                    
+                    <div class="user-menu-divider"></div>
+                    
+                    <button class="login-btn" id="loginButton" onclick="showLogin()">Войти / Зарегистрироваться</button>
+                </div>
+            </div>
+            
+            <!-- Корзина в правом верхнем углу -->
+            <button class="cart-icon-btn icon-only" onclick="toggleCart()">
+                <span>🛒 Корзина</span>
+                <span id="cartCount" class="cart-count">0</span>
+            </button>
+            
+            <!-- Поиск -->
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Поиск инструментов...">
+                <button class="search-btn" onclick="handleSearch()">
+                    <span class="search-icon">🔍</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Об организации (ОБНОВЛЕННЫЙ РАЗДЕЛ С ДВУМЯ КАРТИНКАМИ) -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title">Об организации</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p><strong>ИП Гиш Аренда и прокат электроинструментов</strong> — надежный партнер для всех, кто нуждается в качественном инструменте для строительных и ремонтных работ.</p>
+                    
+                    <p>Индивидуальное предприятие зарегистрировано <strong>11 марта 2025 года</strong>, а с <strong>25 марта 2025 года</strong> мы официально открылись и начали свою деятельность по предоставлению электроинструмента в аренду. Несмотря на то, что мы молодая компания, наша команда имеет богатый опыт в строительной сфере и отлично понимает потребности наших клиентов.</p>
+                    
+                    <p>Наша организация расположена в живописном уголке Республики Адыгея по адресу: <strong>аул Тахтамукай, улица Красноармейская, дом 66</strong>. Удобное расположение позволяет нам быстро доставлять инструмент в любую точку аула и близлежащие населенные пункты.</p>
+                    
+                    <p>Наша миссия — сделать профессиональный инструмент доступным для каждого клиента, обеспечивая высокий уровень сервиса и гарантируя исправность всего оборудования.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Единиц инструмента</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">500+</span>
+                            <span class="stat-label">Довольных клиентов</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">2025</span>
+                            <span class="stat-label">Год основания</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Гарантия качества</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-address">
+                        <h4>📍 Наш адрес:</h4>
+                        <p><strong>Республика Адыгея, аул Тахтамукай, улица Красноармейская, дом 66</strong></p>
+                        <p style="margin-top: 10px;"><span class="address-icon">🕒</span> Часы работы: Пн-Пт: 9:00-18:00, Сб-Вс: 10:00-16:00</p>
+                        <p><span class="address-icon">📞</span> Телефон: +7 (999) 123-45-67</p>
+                    </div>
+                </div>
+                
+                <div class="about-images">
+                    <!-- Первая картинка (desk.png) сверху -->
+                    <div class="about-image-top">
+                        <img src="images/desk.png" alt="Рабочее место" onerror="this.src='https://via.placeholder.com/400x250/3b82f6/ffffff?text=Наш+офис'">
+                        <div class="image-caption">
+                            Наше рабочее пространство
+                        </div>
+                    </div>
+                    
+                    <!-- Вторая картинка (ip.jpg) снизу -->
+                    <div class="about-image-bottom">
+                        <img src="images/ip.jpg" alt="ИП Гиш" onerror="this.src='https://via.placeholder.com/400x300/1e3a8a/ffffff?text=ИП+Гиш'">
+                        <div class="image-caption" style="font-weight: 500; font-style: normal;">
+                            <span class="address-icon">📍</span> аул Тахтамукай, ул. Красноармейская, 66
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Карусель популярных инструментов -->
+    <section id="catalog-section" class="carousel-section">
+        <div class="container">
+            <h2 class="section-title">🔥 Каталог инструментов</h2>
+            <div class="carousel-container">
+                <button class="carousel-btn prev-btn" onclick="moveCarousel(-1)">❮</button>
+                
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Слайды будут добавлены через JavaScript -->
+                </div>
+                
+                <button class="carousel-btn next-btn" onclick="moveCarousel(1)">❯</button>
+                
+                <div class="carousel-indicators" id="carouselIndicators"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Услуги -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <h2 class="section-title">Наши услуги</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>Аренда инструмента</h3>
+                    <p>Широкий выбор профессионального электроинструмента для любых задач — от бытового ремонта до крупных строительных работ.</p>
+                    <ul class="service-features">
+                        <li>✅ Краткосрочная аренда (от 1 дня)</li>
+                        <li>✅ Долгосрочная аренда (со скидкой)</li>
+                        <li>✅ Бесплатная доставка при заказе от 3000 руб</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🛠️</div>
+                    <h3>Техническое обслуживание</h3>
+                    <p>Все инструменты проходят регулярное техническое обслуживание и диагностику перед сдачей в аренду.</p>
+                    <ul class="service-features">
+                        <li>✅ Полная диагностика перед выдачей</li>
+                        <li>✅ Чистка и смазка механизмов</li>
+                        <li>✅ Замена расходных материалов</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🚚</div>
+                    <h3>Доставка и консультации</h3>
+                    <p>Доставка инструмента в любую точку города и профессиональные консультации по подбору оборудования.</p>
+                    <ul class="service-features">
+                        <li>✅ Быстрая доставка (в течение 2 часов)</li>
+                        <li>✅ Бесплатные консультации специалистов</li>
+                        <li>✅ Помощь в выборе инструмента</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">⭐</div>
+                    <h3>Гарантия и страховка</h3>
+                    <p>Полная гарантия на все инструменты и возможность страхования оборудования при аренде.</p>
+                    <ul class="service-features">
+                        <li>✅ Гарантия исправности</li>
+                        <li>✅ Возможность страхования</li>
+                        <li>✅ Быстрое решение проблем</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Работники -->
+    <section id="team" class="team-section">
+        <div class="container">
+            <h2 class="section-title">Наша команда</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="woman.jpeg" alt="Гиш Ирина Нурбиевна" onerror="this.src='https://via.placeholder.com/300x300/1e3a8a/ffffff?text=Фото'">
+                    </div>
+                    <div class="member-info">
+                        <h3>Гиш Ирина Нурбиевна</h3>
+                        <p class="member-role">Владелец и основатель</p>
+                        <p class="member-desc">Руководит компанией с 2025 года. Имеет более 10 лет опыта в сфере строительства и аренды оборудования.</p>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="man.jpeg" alt="Тлиап Аслан Хазретович" onerror="this.src='https://via.placeholder.com/300x300/3b82f6/ffffff?text=Фото'">
+                    </div>
+                    <div class="member-info">
+                        <h3>Тлиап Аслан Хазретович</h3>
+                        <p class="member-role">Менеджер по работе с клиентами</p>
+                        <p class="member-desc">Помогает клиентам выбрать подходящий инструмент и оформляет заказы. Работает в компании с момента открытия.</p>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="man2.jpeg" alt="Сидоров Дмитрий" onerror="this.src='https://via.placeholder.com/300x300/f59e0b/ffffff?text=Фото'">
+                    </div>
+                    <div class="member-info">
+                        <h3>Сидоров Дмитрий</h3>
+                        <p class="member-role">Инженер-техник</p>
+                        <p class="member-desc">Отвечает за техническое состояние оборудования. Имеет сертификаты по ремонту электроинструмента.</p>
+                    </div>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="man3.jpeg" alt="Гиш Рустам Нурбиевич" onerror="this.src='https://via.placeholder.com/300x300/10b981/ffffff?text=Фото'">
+                    </div>
+                    <div class="member-info">
+                        <h3>Гиш Рустам Нурбиевич</h3>
+                        <p class="member-role">Логист и кладовщик</p>
+                        <p class="member-desc">Контролирует наличие инструмента на складе и организует доставку клиентам.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Калькулятор -->
+    <section id="calculator" class="calculator-section">
+        <div class="container">
+            <h2 class="section-title">Калькулятор стоимости аренды</h2>
+            <div class="calculator-container">
+                <div class="calculator-form">
+                    <div class="calc-row">
+                        <label for="calcTool">Выберите инструмент:</label>
+                        <select id="calcTool" class="calc-select">
+                            <option value="">-- Выберите инструмент --</option>
+                            <option value="600">Болгарка (УШМ) - 600 руб/сутки</option>
+                            <option value="1200">Электрогенератор - 1200 руб/сутки</option>
+                            <option value="750">Циркулярная пила - 750 руб/сутки</option>
+                            <option value="550">Сабельная пила - 550 руб/сутки</option>
+                            <option value="400">Пуско-зарядное устройство - 400 руб/сутки</option>
+                            <option value="500">Дрель ударная - 500 руб/сутки</option>
+                            <option value="900">Перфоратор - 900 руб/сутки</option>
+                            <option value="1800">Виброплита - 1800 руб/сутки</option>
+                        </select>
+                    </div>
+
+                    <div class="calc-row">
+                        <label for="calcDays">Количество дней:</label>
+                        <input type="number" id="calcDays" class="calc-input" min="1" value="1" max="30">
+                    </div>
+
+                    <div class="calc-row">
+                        <label for="calcDiscount">Скидка при долгосрочной аренде:</label>
+                        <select id="calcDiscount" class="calc-select">
+                            <option value="0">Без скидки</option>
+                            <option value="5">5% (от 7 дней)</option>
+                            <option value="10">10% (от 14 дней)</option>
+                            <option value="15">15% (от 30 дней)</option>
+                        </select>
+                    </div>
+
+                    <div class="calc-row delivery-option">
+                        <label>
+                            <input type="checkbox" id="calcDelivery" value="300">
+                            Доставка (+300 руб)
+                        </label>
+                    </div>
+
+                    <button id="calcButton" class="calc-button">Рассчитать стоимость</button>
+                </div>
+
+                <div class="calculator-result">
+                    <h3>Результат расчета:</h3>
+                    <div class="result-item">
+                        <span>Инструмент:</span>
+                        <span id="resultTool">Не выбран</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Стоимость в сутки:</span>
+                        <span id="resultDaily">0 руб</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Количество дней:</span>
+                        <span id="resultDays">0 дней</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Скидка:</span>
+                        <span id="resultDiscount">0%</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Доставка:</span>
+                        <span id="resultDelivery">Нет</span>
+                    </div>
+                    <div class="result-total">
+                        <span>Итого:</span>
+                        <span id="resultTotal">0 руб</span>
+                    </div>
+                    <button id="addToCartBtn" class="add-to-cart-btn calc-cart-btn">Добавить в корзину</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Модальное окно авторизации -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal">
+            <div class="modal-header">
+                <h2 id="authModalTitle">Вход в систему</h2>
+                <button class="close-modal" onclick="closeAuthModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Форма входа -->
+                <form id="loginForm" class="auth-form" style="display: block;">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Пароль</label>
+                        <input type="password" id="loginPassword" placeholder="******" required>
+                    </div>
+                    <button type="submit" class="auth-btn login-btn">Войти</button>
+                </form>
+                
+                <!-- Форма регистрации -->
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="regName">Имя</label>
+                        <input type="text" id="regName" placeholder="Иван Иванов" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" placeholder="email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPhone">Телефон</label>
+                        <input type="tel" id="regPhone" placeholder="+7 (999) 123-45-67">
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Пароль</label>
+                        <input type="password" id="regPassword" placeholder="минимум 6 символов" required>
+                        <div class="password-hint">Минимум 6 символов</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">Подтверждение пароля</label>
+                        <input type="password" id="regConfirmPassword" placeholder="повторите пароль" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regAddress">Адрес доставки</label>
+                        <input type="text" id="regAddress" placeholder="г. Москва, ул. Ленина, д. 1">
+                    </div>
+                    <button type="submit" class="auth-btn register-btn">Зарегистрироваться</button>
+                </form>
+                
+                <div class="auth-switch">
+                    <span id="authSwitchText">Нет аккаунта?</span>
+                    <button id="authSwitchBtn" onclick="toggleAuthMode()">Зарегистрироваться</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент (модальные окна) -->
+    <main class="main">
+        <!-- Модальное окно профиля -->
+        <div id="profileModal" class="modal">
+            <div class="modal-content profile-modal">
+                <div class="modal-header">
+                    <h2>👤 Мой профиль</h2>
+                    <button class="close-modal" onclick="closeModal('profileModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="profile-section">
+                        <h3>Личная информация</h3>
+                        <div class="form-group">
+                            <label for="profileName">ФИО</label>
+                            <input type="text" id="profileName" placeholder="Введите ваше ФИО">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">Email</label>
+                            <input type="email" id="profileEmail" placeholder="email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePhone">Телефон</label>
+                            <input type="tel" id="profilePhone" placeholder="+7 (999) 123-45-67">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileAddress">Адрес доставки</label>
+                            <input type="text" id="profileAddress" placeholder="г. Москва, ул. Ленина, д. 1">
+                        </div>
+                        <button class="save-profile-btn" onclick="saveProfile()">Сохранить изменения</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Модальное окно способов оплаты -->
+        <div id="paymentModal" class="modal">
+            <div class="modal-content payment-modal">
+                <div class="modal-header">
+                    <h2>💳 Способы оплаты</h2>
+                    <button class="close-modal" onclick="closeModal('paymentModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="payment-section">
+                        <h3>Привязанные карты</h3>
+                        <div id="savedCards" class="saved-cards">
+                            <div class="empty-cards">У вас нет привязанных карт</div>
+                        </div>
+                        
+                        <button class="add-card-btn" onclick="showAddCardForm()">➕ Добавить карту</button>
+                        
+                        <div id="addCardForm" class="add-card-form" style="display: none;">
+                            <h3>Добавить новую карту</h3>
+                            <div class="form-group">
+                                <label for="cardNumber">Номер карты</label>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label for="cardExpiry">Срок действия</label>
+                                    <input type="text" id="cardExpiry" placeholder="ММ/ГГ" maxlength="5">
+                                </div>
+                                <div class="form-group half">
+                                    <label for="cardCVC">CVC</label>
+                                    <input type="text" id="cardCVC" placeholder="123" maxlength="3">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardName">Имя на карте</label>
+                                <input type="text" id="cardName" placeholder="ИВАНОВ ИВАН">
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="saveCard">
+                                    <span>Сохранить эту карту для будущих покупок</span>
+                                </label>
+                            </div>
+                            <div class="form-actions">
+                                <button class="cancel-btn" onclick="hideAddCardForm()">Отмена</button>
+                                <button class="save-card-btn" onclick="saveCard()">Сохранить карту</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Модальное окно истории заказов -->
+        <div id="ordersModal" class="modal">
+            <div class="modal-content orders-modal">
+                <div class="modal-header">
+                    <h2>📦 История заказов</h2>
+                    <button class="close-modal" onclick="closeModal('ordersModal')">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="ordersList" class="orders-list">
+                        <div class="empty-orders">У вас пока нет заказов</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Корзина (сайдбар) -->
+        <div id="cartSidebar" class="cart-sidebar">
+            <div class="cart-header">
+                <h3>🛒 Ваша корзина</h3>
+                <button class="close-cart" onclick="toggleCart()">×</button>
+            </div>
+            
+            <div class="cart-items" id="cartItems">
+                <!-- Товары будут добавляться сюда -->
+                <div class="empty-cart">Корзина пуста</div>
+            </div>
+            
+            <div class="cart-summary">
+                <div class="days-selector">
+                    <label for="rentDays">Количество дней:</label>
+                    <input type="number" id="rentDays" min="1" max="30" value="1" onchange="updateCartTotal()">
+                </div>
+                
+                <div class="cart-total">
+                    <div class="total-line">
+                        <span>Стоимость аренды:</span>
+                        <span id="subtotal">0 руб</span>
+                    </div>
+                    <div class="total-line">
+                        <span>Количество дней:</span>
+                        <span id="daysCount">1</span>
+                    </div>
+                    <div class="total-line total">
+                        <span>Итого:</span>
+                        <span id="totalPrice">0 руб</span>
+                    </div>
+                </div>
+                
+                <button class="checkout-btn" onclick="checkout()">Оформить заказ</button>
+                <button class="clear-cart-btn" onclick="clearCart()">Очистить корзину</button>
+            </div>
+        </div>
+        
+        <!-- Оверлей для модальных окон -->
+        <div class="modal-overlay" onclick="closeAllModals()"></div>
+    </main>
+
+    <!-- Подвал (ОБНОВЛЕННЫЙ) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="#about">Об организации</a>
+                <a href="#catalog-section">Каталог</a>
+                <a href="#services">Услуги</a>
+                <a href="#team">Работники</a>
+                <a href="#calculator">Калькулятор</a>
+            </div>
+            <div class="contact-info">
+                <h3>Контакты</h3>
+                <p class="contact-item">
+                    <span class="contact-icon location-icon">📍</span>
+                    аул Тахтамукай, ул. Красноармейская, 66
+                </p>
+                <p class="contact-item">
+                    <span class="contact-icon phone-icon">📞</span>
+                    +7 (999) 123-45-67
+                </p>
+                <p class="contact-item">
+                    <span class="contact-icon time-icon">🕒</span>
+                    Пн-Пт: 9:00-18:00, Сб-Вс: 10:00-16:00
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
